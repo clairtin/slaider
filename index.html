@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    #slider {
+      width: 300px;
+      height: 10px;
+      background-color: #ccc;
+      position: relative;
+      cursor: pointer;
+    }
+    #slider-handle {
+      width: 20px;
+      height: 20px;
+      background-color: #333;
+      position: absolute;
+      top: -5px;
+      left: 0;
+      cursor: pointer;
+    }
+    #slider-value {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="slider">
+    <div id="slider-handle"></div>
+  </div>
+
+  <div id="slider-value">0</div>
+
+  <script>
+    const slider = document.getElementById('slider');
+    const handle = document.getElementById('slider-handle');
+    const valueDisplay = document.getElementById('slider-value');
+
+    const minValue = 0;
+    const maxValue = 100;
+    let currentValue = minValue;
+
+    function setValue(value) {
+      currentValue = value;
+      valueDisplay.textContent = value;
+    }
+
+    function setHandlePosition(x) {
+      const sliderWidth = slider.clientWidth;
+      const handleWidth = handle.clientWidth;
+      const newPosition = x - handleWidth / 2;
+      const minPosition = 0;
+      const maxPosition = sliderWidth - handleWidth;
+
+      const clampedPosition = Math.max(minPosition, Math.min(newPosition, maxPosition));
+      handle.style.left = clampedPosition + 'px';
+
+      const valueRange = maxValue - minValue;
+      const positionRange = maxPosition - minPosition;
+      const valueRatio = valueRange / positionRange;
+      const newValue = Math.round(minValue + (clampedPosition - minPosition) * valueRatio);
+      setValue(newValue);
+    }
+
+    slider.addEventListener('mousedown', function(event) {
+      setHandlePosition(event.clientX);
+
+      const handleMove = function(event) {
+        setHandlePosition(event.clientX);
+      };
+
+      const handleRelease = function() {
+        document.removeEventListener('mousemove', handleMove);
+        document.removeEventListener('mouseup', handleRelease);
+      };
+
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleRelease);
+    });
+
+    setValue(currentValue);
+  </script>
+
+</body>
+</html>
